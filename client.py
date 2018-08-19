@@ -73,7 +73,7 @@ def main_loop():
     print '\nquery: [{}]\n'.format(query_string)
 
     resp = requests.post(
-      'http://127.0.0.1:8080',
+      'http://127.0.0.1:{}'.format(config.PORT),
       data=json.dumps({'query': query_string, 'selected_index': selected_index})
     )
 

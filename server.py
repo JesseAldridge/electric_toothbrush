@@ -7,7 +7,6 @@ from watchdog import events
 import config
 
 def main():
-  port = 8080
   dir_path = os.path.expanduser(config.DIR_PATH_NOTES)
 
   def score(basename, query_string):
@@ -101,8 +100,8 @@ def main():
   t.daemon = True  # allow parent process to kill it
   t.start()
 
-  server = BaseHTTPServer.HTTPServer(('', port), MyHandler)
-  print 'Starting httpserver on port', port
+  server = BaseHTTPServer.HTTPServer(('', config.PORT), MyHandler)
+  print 'Starting httpserver on port', config.PORT
 
   try:
     server.serve_forever()
