@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import sys, tty, termios, subprocess, os, json, glob
+import sys, tty, termios, subprocess, os, json, glob, time
 
 import requests
 
@@ -70,12 +70,23 @@ def main_loop():
   is_first_key = False
   selected_index = None
   while True:
-    print '\nquery: [{}]\n'.format(query_string)
+    post_json = json.dumps({'query': query_string, 'selected_index': selected_index})
+    for _ in range(2):
+      try:
+        resp = requests.post('http://127.0.0.1:{}'.format(config.PORT), data=post_json)
+      except requests.exceptions.ConnectionError:
+        server_path = os.path.join(os.path.dirname(__file__), 'etoothbrush_server')
+        print 'failed to connect, launching server:', server_path, '...'
+        subprocess.Popen(['nohup', server_path],
+                         stdout=open('/dev/null', 'w'),
+                         stderr=open('etoothbrush_err.log', 'a'),
+                         preexec_fn=os.setpgrp
+                         )
+        time.sleep(3)
+      else:
+        break
 
-    resp = requests.post(
-      'http://127.0.0.1:{}'.format(config.PORT),
-      data=json.dumps({'query': query_string, 'selected_index': selected_index})
-    )
+    print '\nquery: [{}]\n'.format(query_string)
 
     if resp.status_code != 200:
       print 'error from server'

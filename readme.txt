@@ -3,11 +3,13 @@ Installation
 
 Something like this:
 ```
-git clone git@github.com:JesseAldridge/toothbrush.git
-cd toothbrush
+git clone git@github.com:JesseAldridge/electric_toothbrush.git
+cd electric_toothbrush
 pip install -r requirements.txt
-# symlink to the client
-ln -s /Users/jesse_aldridge/Dropbox/toothbrush/client.py /usr/local/bin/t
+# symlink the client
+ln -s /Users/jesse_aldridge/Dropbox/electric_toothbrush/client.py /usr/local/bin/t
+# symlink the server
+ln -s /Users/jesse_aldridge/Dropbox/electric_toothbrush/server.py /usr/local/bin/etoothbrush_server
 ```
 
 Set DIR_PATH_NOTES in config.py to the directory that you will use to store your notes.
