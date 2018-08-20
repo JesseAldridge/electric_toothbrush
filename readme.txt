@@ -29,6 +29,10 @@ Hit return to either open the matching file or create a new file if there are no
 
 ctrl+n will also create a new note from the current query
 
+Note: If you don't launch the server in a separate terminal, the client will launch for you.
+If this happens and you want to kill the server, do `ps aux | head -n1; ps aux | grep etoothbrush`
+then: `kill <pid>`
+
 License
 ---
 MIT
