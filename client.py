@@ -67,7 +67,7 @@ def main_loop():
 
   # Wait for a key, build up the query string.
 
-  is_first_key = False
+  is_first_key = True
   selected_index = None
   while True:
     post_json = json.dumps({'query': query_string, 'selected_index': selected_index})
