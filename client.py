@@ -78,8 +78,8 @@ def main_loop():
         server_path = os.path.join(os.path.dirname(__file__), 'etoothbrush_server')
         print 'failed to connect, launching server:', server_path, '...'
         subprocess.Popen(['nohup', server_path],
-                         stdout=open('/dev/null', 'w'),
-                         stderr=open('etoothbrush_err.log', 'a'),
+                         stdout=open(os.path.join(config.DIR_PATH_META, 'etoothbrush.out'), 'a'),
+                         stderr=open(os.path.join(config.DIR_PATH_META, 'etoothbrush.err'), 'a'),
                          preexec_fn=os.setpgrp
                          )
         time.sleep(3)
