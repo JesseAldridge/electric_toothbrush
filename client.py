@@ -98,7 +98,7 @@ def main_loop():
     matched_basenames = resp_dict.get('matched_basenames') or []
 
     for i, basename in enumerate(matched_basenames):
-      print '{}{}'.format('> ' if i == selected_index else '  ', basename)
+      print u'{}{}'.format('> ' if i == selected_index else '  ', basename)
       if i == selected_index:
         lines = selected_content.splitlines()
         lines = lines[:10] + (['...'] if len(lines) > 10 else [])
