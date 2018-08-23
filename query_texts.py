@@ -59,14 +59,14 @@ class Query:
   def query_vec(self, query):
     pattern = re.compile(r'[\W_]+')
     query = pattern.sub(' ',query)
-    queryls = query.split()
-    queryVec = [0]*len(queryls)
+    queryList = query.split()
+    queryVec = [0] * len(queryList)
     index = 0
-    for ind, word in enumerate(queryls):
+    for ind, word in enumerate(queryList):
       queryVec[index] = self.query_freq(word, query)
       index += 1
     queryidf = [self.index.idf[word] for word in self.index.getUniques()]
-    magnitude = pow(sum(map(lambda x: x**2, queryVec)),.5)
+    magnitude = pow(sum(map(lambda x: x ** 2, queryVec)), .5)
     freq = self.term_freq(self.index.getUniques(), query)
     #print('THIS IS THE FREQ')
     tf = [x/magnitude for x in freq]
