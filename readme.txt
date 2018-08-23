@@ -36,7 +36,9 @@ then: `kill <pid>`
 Notes
 ---
 
-Search code taken from: https://github.com/logicx24/Text-Search-Engine
+Search code taken from:
+https://github.com/logicx24/Text-Search-Engine
+http://aakashjapi.com/fuckin-search-engines-how-do-they-work/
 
 License
 ---

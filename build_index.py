@@ -2,6 +2,7 @@
 #res = {filename: [world1, word2]}
 
 # https://github.com/logicx24/Text-Search-Engine
+# http://aakashjapi.com/fuckin-search-engines-how-do-they-work/
 
 import re, math, glob
 
@@ -13,7 +14,7 @@ class BuildIndex:
     self.idf = {}
     self.filenames = files
     self.file_to_terms = self.process_files()
-    self.regdex = self.regIndex()
+    self.regdex = self.reg_index()
     self.totalIndex = self.execute()
     self.vectors = self.vectorize()
     self.mags = self.magnitudes(self.filenames)
@@ -25,9 +26,13 @@ class BuildIndex:
     for file in self.filenames:
       #stopwords = open('stopwords.txt').read().close()
       pattern = re.compile(r'[\W_]+')
-      file_to_terms[file] = open(file, 'r').read().lower();
-      file_to_terms[file] = pattern.sub(' ',file_to_terms[file])
+      with open(file, 'r') as f:
+        file_to_terms[file] = f.read().lower()
+
+      # TODO: these two lines do nothing?
+      file_to_terms[file] = pattern.sub(' ', file_to_terms[file])
       re.sub(r'[\W_]+','', file_to_terms[file])
+
       file_to_terms[file] = file_to_terms[file].split()
       #file_to_terms[file] = [w for w in file_to_terms[file] if w not in stopwords]
       #file_to_terms[file] = [stemmer.stem_word(w) for w in file_to_terms[file]]
@@ -61,11 +66,15 @@ class BuildIndex:
       self.tf[filename] = {}
       for word in indie_indices[filename].keys():
         self.tf[filename][word] = len(indie_indices[filename][word])
-        if word in self.df.keys():
+        # TODO: use setdefault here
+        if word in self.df.keys(): # TODO: remove all these .keys()
           self.df[word] += 1
         else:
           self.df[word] = 1
         if word in total_index.keys():
+          # TODO: why would filename already be in total_index?
+          #       even if it is, why are we appending a list to another list?
+          #       just get rid of this?
           if filename in total_index[word].keys():
             total_index[word][filename].append(indie_indices[filename][word][:])
           else:
@@ -77,6 +86,7 @@ class BuildIndex:
   def vectorize(self):
     vectors = {}
     for filename in self.filenames:
+      # TODO: regdex -> reg_index
       vectors[filename] = [len(self.regdex[filename][word]) for word in self.regdex[filename].keys()]
     return vectors
 
@@ -91,27 +101,32 @@ class BuildIndex:
     return len(self.filenames)
 
   def magnitudes(self, documents):
+    # TODO: mags -> filename_to_mag
     mags = {}
+    # TODO: documents -> filenames
     for document in documents:
-      mags[document] = pow(sum(map(lambda x: x**2, self.vectors[document])),.5)
+      # TODO: vectors -> filename_to_vector
+      mags[document] = pow(sum(map(lambda x: x ** 2, self.vectors[document])), .5)
     return mags
 
   def term_frequency(self, term, document):
-    return self.tf[document][term]/self.mags[document] if term in self.tf[document].keys() else 0
+    # TODO: term_frequency -> normal_term_frequency
+    return self.tf[document][term] / self.mags[document] if term in self.tf[document].keys() else 0
 
   def populate_scores(self): #pretty sure that this is wrong and makes little sense.
     for filename in self.filenames:
       for term in self.getUniques():
+        # TODO: do this normalization somewhere else
         self.tf[filename][term] = self.term_frequency(term, filename)
         if term in self.df.keys():
           self.idf[term] = self.idf_func(self.collection_size(), self.df[term])
         else:
           self.idf[term] = 0
-    return self.df, self.tf, self.idf
+    return self.df, self.tf, self.idf # TODO: no reason to return these values?
 
   def idf_func(self, N, N_t):
     if N_t != 0:
-      return math.log(N/N_t)
+      return math.log(N / N_t)
     else:
        return 0
 
@@ -121,10 +136,10 @@ class BuildIndex:
   def execute(self):
     return self.full_index()
 
-  def regIndex(self):
+  def reg_index(self):
     return self.make_indices(self.file_to_terms)
 
-  def getUniques(self):
+  def getUniques(self): # TODO: get rid of this method
     return self.totalIndex.keys()
 
 if __name__ == '__main__':

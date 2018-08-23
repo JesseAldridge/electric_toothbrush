@@ -5,9 +5,9 @@ import build_index
 #input = [file1, file2, ...]
 #res = {word: {filename: {pos1, pos2}, ...}, ...}
 class Query:
-  def __init__(self, filenames):
+  def __init__(self, filenames, index):
     self.filenames = filenames
-    self.index = build_index.BuildIndex(self.filenames)
+    self.index = index
     self.invertedIndex = self.index.totalIndex
     self.regularIndex = self.index.regdex
 
@@ -50,7 +50,7 @@ class Query:
   def make_vectors(self, documents):
     vecs = {}
     for doc in documents:
-      docVec = [0]*len(self.index.getUniques())
+      docVec = [0] * len(self.index.getUniques())
       for ind, term in enumerate(self.index.getUniques()):
         docVec[ind] = self.index.generate_score(term, doc)
       vecs[doc] = docVec
@@ -61,17 +61,20 @@ class Query:
     query = pattern.sub(' ',query)
     queryList = query.split()
     queryVec = [0] * len(queryList)
-    index = 0
+    index = 0 # TODO: use ind from the loop instead
     for ind, word in enumerate(queryList):
       queryVec[index] = self.query_freq(word, query)
       index += 1
-    queryidf = [self.index.idf[word] for word in self.index.getUniques()]
+    # TODO: why cloning index.idf here?  should be `for word in queryList`?
+    #       just using index.idf below should work
+    queryIdf = [self.index.idf[word] for word in self.index.getUniques()]
     magnitude = pow(sum(map(lambda x: x ** 2, queryVec)), .5)
+    # TODO: freq -> query_vector
     freq = self.term_freq(self.index.getUniques(), query)
     #print('THIS IS THE FREQ')
-    tf = [x/magnitude for x in freq]
-    final = [tf[i]*queryidf[i] for i in range(len(self.index.getUniques()))]
-    #print(len([x for x in queryidf if x != 0]) - len(queryidf))
+    tf = [x / magnitude for x in freq]
+    final = [tf[i] * queryIdf[i] for i in range(len(self.index.getUniques()))]
+    #print(len([x for x in queryIdf if x != 0]) - len(queryIdf))
     return final
 
   def query_freq(self, term, query):
@@ -84,8 +87,8 @@ class Query:
     return count
 
   def term_freq(self, terms, query):
-    temp = [0]*len(terms)
-    for i,term in enumerate(terms):
+    temp = [0] * len(terms)
+    for i, term in enumerate(terms):
       temp[i] = self.query_freq(term, query)
       #print(self.query_freq(term, query))
     return temp
@@ -96,23 +99,26 @@ class Query:
     return sum([x*y for x,y in zip(doc1, doc2)])
 
   def rank_results(self, resultDocs, query):
+    # TODO: don't these vectors already exist in the index?
     vectors = self.make_vectors(resultDocs)
-    #print(vectors)
     queryVec = self.query_vec(query)
-    #print(queryVec)
+    # TODO: rename results to something more descriptive
     results = [[self.dot_product(vectors[result], queryVec), result] for result in resultDocs]
-    #print(results)
     results.sort(key=lambda x: x[0])
-    #print(results)
     results = [x[1] for x in results]
     return results
 
-"""Do this:
-  Calculate a tf-idf score for every unique term in the collection, for each document. As in, find all unique terms, and for each document, got through
-  each unique term and calculate a tf-idf score for it in the doc. You can do this already with the generate_score function. Doc becomes array of scores.
-  Calculate a tf-idf score for every unique term in the collection for the query.
-  Find the cosine distance between each document and the query, and put the results in descending order.
+"""
+Do this:
+  Calculate a tf-idf score for every unique term in the collection, for each document. As in, find
+  all unique terms, and for each document, got through each unique term and calculate a tf-idf
+  score for it in the doc. You can do this already with the generate_score function. Doc becomes
+  array of scores. Calculate a tf-idf score for every unique term in the collection for the query.
+  Find the cosine distance between each document and the query, and put the results in descending
+  order.
 """
 
 if __name__ == '__main__':
-  q = Query(glob.glob('*.py'))
+  index = build_index.BuildIndex(self.filenames)
+  q = Query(glob.glob('*.py'), index)
+  print q.free_text_query('query')
