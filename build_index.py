@@ -1,42 +1,42 @@
-#input = [file1, file2, ...]
-#res = {filename: [world1, word2]}
+# Based on: https://github.com/logicx24/Text-Search-Engine
+# Described at: http://aakashjapi.com/fuckin-search-engines-how-do-they-work/
 
-# https://github.com/logicx24/Text-Search-Engine
-# http://aakashjapi.com/fuckin-search-engines-how-do-they-work/
-
-import re, math, glob
+import re, math, glob, codecs, os
 
 class BuildIndex:
 
-  def __init__(self, files):
+  def __init__(self, paths):
     self.tf = {}
     self.df = {}
     self.idf = {}
-    self.filenames = files
-    self.file_to_terms = self.process_files()
+    self.filenames = paths
+    self.basename_to_content = {}
+    self.file_to_terms = {}
+    for path in paths:
+      self.load_path(path)
     self.regdex = self.reg_index()
     self.totalIndex = self.execute()
     self.vectors = self.vectorize()
     self.mags = self.magnitudes(self.filenames)
     self.populate_scores()
 
+  def path_to_basename(self, path):
+    return os.path.splitext(os.path.basename(unicode(path, 'utf8')))[0]
 
-  def process_files(self):
-    file_to_terms = {}
-    for file in self.filenames:
-      #stopwords = open('stopwords.txt').read().close()
-      pattern = re.compile(r'[\W_]+')
-      with open(file, 'r') as f:
-        file_to_terms[file] = f.read().lower()
+  def load_path(self, path):
+    basename = self.path_to_basename(path)
+    with codecs.open(path, encoding='utf-8') as f:
+      text = f.read()
 
-      # TODO: these two lines do nothing?
-      file_to_terms[file] = pattern.sub(' ', file_to_terms[file])
-      re.sub(r'[\W_]+','', file_to_terms[file])
+    self.basename_to_content[basename] = text
 
-      file_to_terms[file] = file_to_terms[file].split()
-      #file_to_terms[file] = [w for w in file_to_terms[file] if w not in stopwords]
-      #file_to_terms[file] = [stemmer.stem_word(w) for w in file_to_terms[file]]
-    return file_to_terms
+    normalized_text = text.lower()
+
+    # TODO: use re.split instead
+    # "foo_bar   baz" -> "foo bar baz" -> ["foo", "bar", "baz"]
+    between_words = re.compile(r'[\W_]+')
+    normalized_text = between_words.sub(' ', normalized_text)
+    self.file_to_terms[path] = normalized_text.split()
 
   #input = [word1, word2, ...]
   #output = {word1: [pos1, pos2], word2: [pos2, pos434], ...}
@@ -143,4 +143,10 @@ class BuildIndex:
     return self.totalIndex.keys()
 
 if __name__ == '__main__':
-  index = BuildIndex(glob.glob('*.py'))
+  def test():
+    index = BuildIndex(glob.glob('*.py'))
+    index.basename_to_content
+    print 'query mathces:', index.totalIndex['query']
+    assert 0 < len(index.totalIndex['query']) < len(index.basename_to_content)
+
+  test()

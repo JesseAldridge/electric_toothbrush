@@ -57,6 +57,8 @@ class Query:
     return vecs
 
   def query_vec(self, query):
+    if not query.strip():
+      return []
     pattern = re.compile(r'[\W_]+')
     query = pattern.sub(' ',query)
     queryList = query.split()
@@ -119,6 +121,15 @@ Do this:
 """
 
 if __name__ == '__main__':
-  index = build_index.BuildIndex(self.filenames)
-  q = Query(glob.glob('*.py'), index)
-  print q.free_text_query('query')
+  def test():
+    paths = glob.glob('*.py')
+    index = build_index.BuildIndex(paths)
+    q = Query(paths, index)
+    results1 = q.free_text_query('query dot')
+    print 'results1:', results1
+    assert len(results1) > 0
+    results2 = q.free_text_query('query')
+    print 'results2:', results2
+    assert len(results2) > 0
+    assert results1 != results2
+  test()

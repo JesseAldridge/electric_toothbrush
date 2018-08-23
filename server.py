@@ -4,11 +4,12 @@ import BaseHTTPServer, os, glob, codecs, json, threading, time
 from watchdog import observers
 from watchdog import events
 
-import config, build_index
+import config, build_index, query_texts
 
 def main():
   dir_path = os.path.expanduser(config.DIR_PATH_NOTES)
 
+  # TODO: use this score again
   def score(basename, query_string):
     return 10 if query_string == basename else 0
 
@@ -19,40 +20,41 @@ def main():
     basename = path_to_basename(path)
     with codecs.open(path, encoding='utf-8') as f:
       basename_to_content[basename] = f.read()
-    basename_to_content_lower[basename] = basename_to_content[basename].lower()
 
   print 'loading files...'
-  basename_to_content = {}
-  basename_to_content_lower = {}
   glob_path = os.path.join(dir_path, '*.txt')
-  for path in glob.glob(glob_path):
-    load_path(path)
-  print 'loaded {} files'.format(len(basename_to_content))
+  all_paths = glob.glob(glob_path)
+
+
+  # TEMPORARY DEBUG CODE
+  all_paths = all_paths[:100]
+  # TEMPORARY DEBUG CODE
+
+
+  search_index = build_index.BuildIndex(all_paths)
+  print 'loaded {} files'.format(len(search_index.basename_to_content))
 
   class MyHTTPHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     def do_POST(self):
       content_length = int(self.headers['Content-Length'])
       post_dict = json.loads(self.rfile.read(content_length))
 
-      matched_basenames = []
       query_string = unicode(post_dict['query'])
       selected_index = post_dict.get('selected_index')
       if selected_index is not None:
         selected_index = int(selected_index)
+      query = query_texts.Query(all_paths, search_index)
+      matched_paths = query.free_text_query(query_string)
+      matched_basenames = [os.path.basename(path) for path in matched_paths]
 
-      terms = set(query_string.lower().split())
-      for basename, content in basename_to_content_lower.iteritems():
-        for term in terms:
-          if term not in basename and term not in content:
-            break
-        else:
-          matched_basenames.append(basename)
-
-      matched_basenames.sort(key=lambda basename: score(query_string, basename), reverse=True)
-
+      is_selection_valid = (
+        selected_index is not None and
+        matched_basenames and
+        0 < selected_index < len(matched_basenames)
+      )
       selected_content = None
-      if selected_index is not None and matched_basenames:
-        selected_content = basename_to_content[matched_basenames[selected_index]]
+      if is_selection_valid:
+        selected_content = search_index.basename_to_content[matched_basenames[selected_index]]
 
       max_matches = 10
       json_out = json.dumps({
