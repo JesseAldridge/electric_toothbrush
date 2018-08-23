@@ -33,6 +33,11 @@ Note: If you don't launch the server in a separate terminal, the client will lau
 If this happens and you want to kill the server, do `ps aux | head -n1; ps aux | grep etoothbrush`
 then: `kill <pid>`
 
+Notes
+---
+
+Search code taken from: https://github.com/logicx24/Text-Search-Engine
+
 License
 ---
 MIT

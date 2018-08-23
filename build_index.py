@@ -1,7 +1,7 @@
 #input = [file1, file2, ...]
 #res = {filename: [world1, word2]}
 
-# http://aakashjapi.com/fuckin-search-engines-how-do-they-work/
+# https://github.com/logicx24/Text-Search-Engine
 
 import re, math, glob
 
@@ -17,14 +17,14 @@ class BuildIndex:
     self.totalIndex = self.execute()
     self.vectors = self.vectorize()
     self.mags = self.magnitudes(self.filenames)
-    self.populateScores()
+    self.populate_scores()
 
 
   def process_files(self):
     file_to_terms = {}
     for file in self.filenames:
       #stopwords = open('stopwords.txt').read().close()
-      pattern = re.compile('[\W_]+')
+      pattern = re.compile(r'[\W_]+')
       file_to_terms[file] = open(file, 'r').read().lower();
       file_to_terms[file] = pattern.sub(' ',file_to_terms[file])
       re.sub(r'[\W_]+','', file_to_terms[file])
@@ -54,7 +54,7 @@ class BuildIndex:
 
   #input = {filename: {word: [pos1, pos2, ...], ... }}
   #res = {word: {filename: [pos1, pos2]}, ...}, ...}
-  def fullIndex(self):
+  def full_index(self):
     total_index = {}
     indie_indices = self.regdex
     for filename in indie_indices.keys():
@@ -99,7 +99,7 @@ class BuildIndex:
   def term_frequency(self, term, document):
     return self.tf[document][term]/self.mags[document] if term in self.tf[document].keys() else 0
 
-  def populateScores(self): #pretty sure that this is wrong and makes little sense.
+  def populate_scores(self): #pretty sure that this is wrong and makes little sense.
     for filename in self.filenames:
       for term in self.getUniques():
         self.tf[filename][term] = self.term_frequency(term, filename)
@@ -115,11 +115,11 @@ class BuildIndex:
     else:
        return 0
 
-  def generateScore(self, term, document):
+  def generate_score(self, term, document):
     return self.tf[document][term] * self.idf[term]
 
   def execute(self):
-    return self.fullIndex()
+    return self.full_index()
 
   def regIndex(self):
     return self.make_indices(self.file_to_terms)
