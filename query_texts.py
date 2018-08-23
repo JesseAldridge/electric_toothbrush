@@ -14,8 +14,8 @@ class Query:
   def one_word_query(self, word):
     pattern = re.compile(r'[\W_]+')
     word = pattern.sub(' ',word)
-    if word in self.invertedIndex.keys():
-      return self.rank_results([filename for filename in self.invertedIndex[word].keys()], word)
+    if word in self.invertedIndex:
+      return self.rank_results([filename for filename in self.invertedIndex[word]], word)
     else:
       return []
 
@@ -50,8 +50,8 @@ class Query:
   def make_vectors(self, documents):
     vecs = {}
     for doc in documents:
-      docVec = [0] * len(self.index.getUniques())
-      for ind, term in enumerate(self.index.getUniques()):
+      docVec = [0] * len(self.index.totalIndex)
+      for ind, term in enumerate(self.index.totalIndex):
         docVec[ind] = self.index.generate_score(term, doc)
       vecs[doc] = docVec
     return vecs
@@ -69,13 +69,13 @@ class Query:
       index += 1
     # TODO: why cloning index.idf here?  should be `for word in queryList`?
     #       just using index.idf below should work
-    queryIdf = [self.index.idf[word] for word in self.index.getUniques()]
+    queryIdf = [self.index.idf[word] for word in self.index.totalIndex]
     magnitude = pow(sum(map(lambda x: x ** 2, queryVec)), .5)
     # TODO: freq -> query_vector
-    freq = self.term_freq(self.index.getUniques(), query)
+    freq = self.term_freq(self.index.totalIndex, query)
     #print('THIS IS THE FREQ')
     tf = [x / magnitude for x in freq]
-    final = [tf[i] * queryIdf[i] for i in range(len(self.index.getUniques()))]
+    final = [tf[i] * queryIdf[i] for i in range(len(self.index.totalIndex))]
     #print(len([x for x in queryIdf if x != 0]) - len(queryIdf))
     return final
 

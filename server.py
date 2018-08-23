@@ -25,12 +25,6 @@ def main():
   glob_path = os.path.join(dir_path, '*.txt')
   all_paths = glob.glob(glob_path)
 
-
-  # TEMPORARY DEBUG CODE
-  all_paths = all_paths[:100]
-  # TEMPORARY DEBUG CODE
-
-
   search_index = build_index.BuildIndex(all_paths)
   print 'loaded {} files'.format(len(search_index.basename_to_content))
 
