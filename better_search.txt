@@ -1,0 +1,18 @@
+What is the purpose?
+  to find small, specific bits of information quickly
+  how well does toothbrush search currently perform?
+    identify problematic use cases?
+  just assume i can improve things with obvious changes
+What is the first step? second?
+  1. figure out how I want to improve
+  2. implement improvement
+What are the input/output formats?
+Is there an easier way?  (avoid coding)
+Can I preempt any blockers?
+  - big downloads, IT, app store reviews
+How could this be done faster?
+  - Have the person who owns that part of the code do it
+What are the edge cases?
+  - One item towards the bottom of the FAQ contains a bulleted list
+Do I have a fast feedback loop?
+  - Had to wait two minutes for a Hive query to run after every change.

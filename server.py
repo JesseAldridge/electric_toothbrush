@@ -4,7 +4,7 @@ import BaseHTTPServer, os, glob, codecs, json, threading, time
 from watchdog import observers
 from watchdog import events
 
-import config
+import config, build_index
 
 def main():
   dir_path = os.path.expanduser(config.DIR_PATH_NOTES)
@@ -29,7 +29,7 @@ def main():
     load_path(path)
   print 'loaded {} files'.format(len(basename_to_content))
 
-  class MyHandler(BaseHTTPServer.BaseHTTPRequestHandler):
+  class MyHTTPHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     def do_POST(self):
       content_length = int(self.headers['Content-Length'])
       post_dict = json.loads(self.rfile.read(content_length))
@@ -100,7 +100,7 @@ def main():
   t.daemon = True  # allow parent process to kill it
   t.start()
 
-  server = BaseHTTPServer.HTTPServer(('', config.PORT), MyHandler)
+  server = BaseHTTPServer.HTTPServer(('', config.PORT), MyHTTPHandler)
   print 'Starting httpserver on port', config.PORT
 
   try:
