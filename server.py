@@ -51,7 +51,7 @@ def main():
       matched_basenames.sort(key=lambda basename: score(query_string, basename), reverse=True)
 
       selected_content = None
-      if selected_index is not None:
+      if selected_index is not None and matched_basenames:
         selected_content = basename_to_content[matched_basenames[selected_index]]
 
       max_matches = 10
