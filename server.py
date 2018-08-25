@@ -9,8 +9,12 @@ import config
 def main():
   dir_path = os.path.expanduser(config.DIR_PATH_NOTES)
 
-  def score(basename, query_string):
-    return 10 if query_string == basename else 0
+  def score(query_string, basename):
+    if query_string in basename:
+      return len(query_string) / float(len(basename)) * 10
+
+    tokens = query_string.split()
+    return len([1 for token in tokens if token in basename])
 
   def path_to_basename(path):
     return os.path.splitext(os.path.basename(unicode(path, 'utf8')))[0]
@@ -50,13 +54,17 @@ def main():
 
       matched_basenames.sort(key=lambda basename: score(query_string, basename), reverse=True)
 
+      max_matches = 10
+      matched_basenames = matched_basenames[:max_matches]
+      scores = [score(query_string, basename) for basename in matched_basenames]
+
       selected_content = None
       if selected_index is not None and matched_basenames:
         selected_content = basename_to_content[matched_basenames[selected_index]]
 
-      max_matches = 10
       json_out = json.dumps({
-        "matched_basenames": matched_basenames[:10],
+        "matched_basenames": matched_basenames[:max_matches],
+        "scores": scores,
         "is_more": len(matched_basenames) > max_matches,
         "selected_content": selected_content,
       }, indent=2)

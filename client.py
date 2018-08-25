@@ -96,9 +96,21 @@ def main_loop():
     resp_dict = resp.json()
     selected_content = resp_dict.get('selected_content')
     matched_basenames = resp_dict.get('matched_basenames') or []
+    scores = resp_dict.get('scores') or []
 
-    for i, basename in enumerate(matched_basenames):
-      print u'{}{}'.format('> ' if i == selected_index else '  ', basename)
+    COLORS = COLOR_PINK, COLOR_BLUE, COLOR_GREEN, COLOR_YELLOW, COLOR_RED = (
+      '\033[95m', '\033[94m', '\033[92m', '\033[93m', '\033[91m'
+    )
+    COLOR_END = '\033[0m'
+
+    for i, t in enumerate(zip(matched_basenames, scores)):
+      basename, score = t
+
+      color = COLOR_YELLOW if score > 0 else COLOR_BLUE
+      out_line = u'{}{}{}{}'.format(
+        '> ' if i == selected_index else '  ', color, basename, COLOR_END
+      )
+      print out_line.encode('utf8')
       if i == selected_index:
         lines = selected_content.splitlines()
         lines = lines[:10] + (['...'] if len(lines) > 10 else [])
