@@ -100,15 +100,22 @@ def main_loop():
     matched_basenames = resp_dict.get('matched_basenames') or []
     scores = resp_dict.get('scores') or []
 
-    COLORS = COLOR_PINK, COLOR_BLUE, COLOR_GREEN, COLOR_YELLOW, COLOR_RED = (
-      '\033[95m', '\033[94m', '\033[92m', '\033[93m', '\033[91m'
-    )
+    Red = '\033[91m'
+    Green = '\033[92m'
+    Blue = '\033[94m'
+    Cyan = '\033[96m'
+    White = '\033[97m'
+    Yellow = '\033[93m'
+    Magenta = '\033[95m'
+    Grey = '\033[90m'
+    Black = '\033[90m'
+    Default = '\033[99m'
     COLOR_END = '\033[0m'
 
     for i, t in enumerate(zip(matched_basenames, scores)):
       basename, score = t
 
-      color = COLOR_YELLOW if score > 0 else COLOR_BLUE
+      color = White if score > 0 else Grey
       out_line = '{}{}{}{}'.format(
         '> ' if i == selected_index else '  ', color, basename, COLOR_END
       )
