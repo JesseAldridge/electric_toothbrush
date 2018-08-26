@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/local/bin/python3
 import os, glob, codecs, json, threading, time, sys
 
 from watchdog import observers

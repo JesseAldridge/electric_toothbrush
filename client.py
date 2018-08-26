@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/local/bin/python3
 import sys, tty, termios, subprocess, os, json, glob, time
 
 import requests
