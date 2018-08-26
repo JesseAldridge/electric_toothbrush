@@ -30,8 +30,8 @@ def open_index(index, matched_basenames):
   open_path(path)
 
 def open_path(path):
-  print 'opening:'
-  print '"{}"'.format(path)
+  print('opening:')
+  print('"{}"'.format(path))
   subprocess.call(['open', path])
 
 def new_note(query_string):
@@ -70,13 +70,17 @@ def main_loop():
   is_first_key = True
   selected_index = None
   while True:
-    post_json = json.dumps({'query': query_string, 'selected_index': selected_index})
+    post_json = json.dumps(
+      {'query': query_string, 'selected_index': selected_index}, ensure_ascii=False
+    )
+    headers = {'content-type': 'application/json'}
+    url = 'http://127.0.0.1:{}/search'.format(config.PORT)
     for _ in range(2):
       try:
-        resp = requests.post('http://127.0.0.1:{}'.format(config.PORT), data=post_json)
+        resp = requests.post(url, data=post_json, headers=headers)
       except requests.exceptions.ConnectionError:
         server_path = os.path.join(os.path.dirname(__file__), 'etoothbrush_server')
-        print 'failed to connect, launching server:', server_path, '...'
+        print('failed to connect, launching server:', server_path, '...')
         subprocess.Popen(['nohup', server_path],
                          stdout=open(os.path.join(config.DIR_PATH_META, 'etoothbrush.out'), 'a'),
                          stderr=open(os.path.join(config.DIR_PATH_META, 'etoothbrush.err'), 'a'),
@@ -86,11 +90,11 @@ def main_loop():
       else:
         break
 
-    print '\nquery: [{}]\n'.format(query_string)
+    print('\nquery: [{}]\n'.format(query_string))
 
     if resp.status_code != 200:
-      print 'error from server'
-      print 'resp.content:', resp.content
+      print('error from server')
+      print('resp.content:', resp.content)
       break
 
     resp_dict = resp.json()
@@ -107,16 +111,16 @@ def main_loop():
       basename, score = t
 
       color = COLOR_YELLOW if score > 0 else COLOR_BLUE
-      out_line = u'{}{}{}{}'.format(
+      out_line = '{}{}{}{}'.format(
         '> ' if i == selected_index else '  ', color, basename, COLOR_END
       )
-      print out_line.encode('utf8')
+      print(out_line)
       if i == selected_index:
         lines = selected_content.splitlines()
         lines = lines[:10] + (['...'] if len(lines) > 10 else [])
         indented_lines = ['    ' + line for line in lines]
         content_preview = '\n'.join(indented_lines)
-        print content_preview
+        print(content_preview)
 
     ch = getch()
 
