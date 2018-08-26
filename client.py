@@ -70,9 +70,7 @@ def main_loop():
   is_first_key = True
   selected_index = None
   while True:
-    post_json = json.dumps(
-      {'query': query_string, 'selected_index': selected_index}, ensure_ascii=False
-    )
+    post_json = json.dumps({'query': query_string, 'selected_index': selected_index})
     headers = {'content-type': 'application/json'}
     url = 'http://127.0.0.1:{}/search'.format(config.PORT)
     for _ in range(2):
