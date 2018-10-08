@@ -25,11 +25,9 @@ def main():
     basename = path_to_basename(path)
     with open(path) as f:
       basename_to_content[basename] = f.read()
-    basename_to_content_lower[basename] = basename_to_content[basename].lower()
 
   print('loading files...')
   basename_to_content = {}
-  basename_to_content_lower = {}
   glob_path = os.path.join(dir_path, '*.txt')
   for path in glob.glob(glob_path):
     load_path(path)
@@ -51,9 +49,9 @@ def main():
       selected_index = int(selected_index)
 
     terms = set(query_string.lower().split())
-    for basename, content in basename_to_content_lower.items():
+    for basename, content in basename_to_content.items():
       for term in terms:
-        if term not in basename and term not in content:
+        if term not in basename and term not in content.lower():
           break
       else:
         matched_basenames.append(basename)
@@ -89,7 +87,6 @@ def main():
         if event.event_type == 'moved' or event.event_type == 'deleted':
           old_basename = path_to_basename(event.src_path)
           del basename_to_content[old_basename]
-          del basename_to_content_lower[old_basename]
 
         if event.event_type == 'moved':
           load_path(event.dest_path)
