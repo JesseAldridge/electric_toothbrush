@@ -1,9 +1,9 @@
 import os, glob
 
 class Match:
-  def __init__(self, basename, order_match):
+  def __init__(self, basename):
+    self.term_to_score = {}
     self.basename =  basename
-    self.order_match = order_match
 
 class Searcher:
   def __init__(self, dir_path):
@@ -23,33 +23,47 @@ class Searcher:
     print('loaded {} files'.format(len(self.basename_to_content)))
 
   def score(self, query_string, match):
-    if query_string in match.basename:
-      return len(query_string) / float(len(match.basename)) * 10 + match.order_match
+    doc_score = 0
+    for term, term_score in match.term_to_score.items():
+      doc_score += term_score / self.term_to_doc_count[term]  # weight rare words more heavily
+    return doc_score
 
-    tokens = query_string.split()
-    return len([1 for token in tokens if token in match.basename])
+    # if query_string in match.basename:
+    #   return len(query_string) / float(len(match.basename)) * 10 + match.order_count
+
+    # tokens = query_string.split()
+    # return len([1 for token in tokens if token in match.basename])
 
   def search(self, query_string, selected_index):
     terms = set(query_string.lower().split())
 
     matches = []
+    self.term_to_doc_count = {}
     for basename, content in self.basename_to_content.items():
       remaining_basename = basename.lower()
       remaining_content = content_lower = content.lower()
-      order_match = 0
 
+      match = Match(basename)
       for term in terms:
+        term_score = 0
+        self.term_to_doc_count.setdefault(term, 0)
+
         if term in basename or term in content_lower:
-          if term in remaining_basename or term in remaining_content:
-            order_match += 1
+          self.term_to_doc_count[term] += 1
+
+          if term in basename: # matches in the title are more important
+            term_score += 10
+          else:
+            term_score += 1
+          if term in remaining_basename or term in remaining_content: # order bonus
+            term_score += 1
             if term in remaining_basename:
               remaining_basename = remaining_basename.split(term, 1)[1]
             else:
               remaining_content = remaining_content.split(term, 1)[1]
-        else:
-          break
-      else:
-        matches.append(Match(basename, order_match))
+          match.term_to_score[term] = term_score
+      if match.term_to_score:
+        matches.append(match)
 
     matches.sort(key=lambda match: self.score(query_string, match), reverse=True)
 
@@ -82,6 +96,7 @@ if __name__ == '__main__':
     ('bar foo', ['bar foo baz', 'foo bar baz', 'estimates (estimation)']),
     # matches against content
     ('zzz', ['something else']),
+    ('is string python')
   ]:
     results = searcher.search(query, 0)
     print('results:', results)

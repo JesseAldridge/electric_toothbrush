@@ -6,15 +6,18 @@ from watchdog import events
 import flask
 from flask import request
 
-import config, searcher
+import searcher
 
 def main():
-  dir_path = os.path.expanduser(config.DIR_PATH_NOTES)
+  DIR_PATH_NOTES = os.path.expanduser("~/Dropbox/tbrush_notes")
+  PORT = 38906
+
+  dir_path = os.path.expanduser(DIR_PATH_NOTES)
   search_obj = searcher.Searcher(dir_path)
 
   app = flask.Flask(__name__)
-  port = int(sys.argv[1]) if len(sys.argv) == 2 else config.PORT
-  print('Starting httpserver on port', config.PORT)
+  port = int(sys.argv[1]) if len(sys.argv) == 2 else PORT
+  print('Starting httpserver on port', PORT)
 
   @app.route('/search', methods=['POST'])
   def search():
@@ -23,6 +26,7 @@ def main():
     selected_index = post_dict.get('selected_index')
     if selected_index is not None:
       selected_index = int(selected_index)
+    print('searching for:', query_string)
     result_dict = search_obj.search(query_string, selected_index)
     return json.dumps(result_dict, indent=2)
 
@@ -43,10 +47,10 @@ def main():
 
     event_handler = MyHandler()
     observer = observers.Observer()
-    observer.schedule(event_handler, path=config.DIR_PATH_NOTES, recursive=False)
+    observer.schedule(event_handler, path=DIR_PATH_NOTES, recursive=False)
     observer.start()
 
-    print('monitoring:', config.DIR_PATH_NOTES)
+    print('monitoring:', DIR_PATH_NOTES)
 
     try:
       while True:

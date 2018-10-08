@@ -3,7 +3,9 @@ import sys, tty, termios, subprocess, os, json, glob, time
 
 import requests
 
-import config
+DIR_PATH_META = os.path.expanduser("~/.toothbrush")
+DIR_PATH_NOTES = os.path.expanduser("~/Dropbox/tbrush_notes")
+PORT = 38906
 
 def getch():
   # Return a single character from stdin.
@@ -26,7 +28,7 @@ def open_selected():
 
 def open_index(index, matched_basenames):
   basename = matched_basenames[index]
-  path = os.path.join(config.DIR_PATH_NOTES, basename) + '.txt'
+  path = os.path.join(DIR_PATH_NOTES, basename) + '.txt'
   open_path(path)
 
 def open_path(path):
@@ -35,7 +37,7 @@ def open_path(path):
   subprocess.call(['open', path])
 
 def new_note(query_string):
-  new_path = os.path.join(config.DIR_PATH_NOTES, query_string) + '.txt'
+  new_path = os.path.join(DIR_PATH_NOTES, query_string) + '.txt'
   if not os.path.exists(new_path):
     with open(new_path, 'w') as f:
       f.write('')
@@ -50,17 +52,17 @@ def adjust_selected_index(amount, selected_index, matched_basenames):
     selected_index = 0
   else:
     selected_index += amount
-  selected_index %= min(len(matched_basenames), 10)
+  selected_index %= len(matched_basenames)
   return selected_index
 
 def main_loop():
   # Load notes and saved_query.
 
-  if not os.path.exists(config.DIR_PATH_META):
-    os.mkdir(config.DIR_PATH_META)
+  if not os.path.exists(DIR_PATH_META):
+    os.mkdir(DIR_PATH_META)
 
   query_string = ' '.join(sys.argv[1:])
-  query_path = os.path.join(config.DIR_PATH_META, 'saved_query.txt')
+  query_path = os.path.join(DIR_PATH_META, 'saved_query.txt')
   if not query_string.strip() and os.path.exists(query_path):
     with open(query_path) as f:
       query_string = f.read()
@@ -72,7 +74,7 @@ def main_loop():
   while True:
     post_json = json.dumps({'query': query_string, 'selected_index': selected_index})
     headers = {'content-type': 'application/json'}
-    url = 'http://127.0.0.1:{}/search'.format(config.PORT)
+    url = 'http://127.0.0.1:{}/search'.format(PORT)
     resp = requests.post(url, data=post_json, headers=headers)
 
     print('\nquery: [{}]\n'.format(query_string))
