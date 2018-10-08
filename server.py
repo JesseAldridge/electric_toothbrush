@@ -11,12 +11,12 @@ import config
 def main():
   dir_path = os.path.expanduser(config.DIR_PATH_NOTES)
 
-  def score(query_string, basename):
-    if query_string in basename:
-      return len(query_string) / float(len(basename)) * 10
+  def score(query_string, match):
+    if query_string in match.basename:
+      return len(query_string) / float(len(match.basename)) * 10 + match.order_match
 
     tokens = query_string.split()
-    return len([1 for token in tokens if token in basename])
+    return len([1 for token in tokens if token in match.basename])
 
   def path_to_basename(path):
     return os.path.splitext(os.path.basename(path))[0]
@@ -38,42 +38,58 @@ def main():
   port = int(sys.argv[1]) if len(sys.argv) == 2 else config.PORT
   print('Starting httpserver on port', config.PORT)
 
+  class Match:
+    def __init__(self, basename, order_match):
+      self.basename =  basename
+      self.order_match = order_match
+
   @app.route('/search', methods=['POST'])
   def search():
     post_dict = request.get_json()
 
-    matched_basenames = []
+    matches = []
     query_string = post_dict['query']
     selected_index = post_dict.get('selected_index')
     if selected_index is not None:
       selected_index = int(selected_index)
 
     terms = set(query_string.lower().split())
+
     for basename, content in basename_to_content.items():
+      remaining_basename = basename.lower()
+      remaining_content = content_lower = content.lower()
+      order_match = 0
+
       for term in terms:
-        if term not in basename and term not in content.lower():
+        if term in basename or term in content_lower:
+          if term in remaining_basename or term in remaining_content:
+            order_match += 1
+            if term in remaining_basename:
+              remaining_basename = remaining_basename.split(term, 1)[1]
+            else:
+              remaining_content = remaining_content.split(term, 1)[1]
+        else:
           break
       else:
-        matched_basenames.append(basename)
+        matches.append(Match(basename, order_match))
 
-    matched_basenames.sort(key=lambda basename: score(query_string, basename), reverse=True)
+    matches.sort(key=lambda match: score(query_string, match), reverse=True)
 
     max_matches = 10
-    matched_basenames = matched_basenames[:max_matches]
-    scores = [score(query_string, basename) for basename in matched_basenames]
+    is_more = len(matches) > max_matches
+    matches = matches[:max_matches]
+    scores = [score(query_string, match) for match in matches]
 
     selected_content = None
-    if(
-      selected_index is not None and
-      matched_basenames and
-      selected_index < len(matched_basenames)
-    ):
-      selected_content = basename_to_content[matched_basenames[selected_index]]
+    if selected_index is not None and matches and selected_index < len(matches):
+      selected_content = basename_to_content[matches[selected_index].basename]
+
+    matched_basenames = [match.basename for match in matches]
 
     json_out = json.dumps({
-      "matched_basenames": matched_basenames[:max_matches],
+      "matched_basenames": matched_basenames,
       "scores": scores,
-      "is_more": len(matched_basenames) > max_matches,
+      "is_more": is_more,
       "selected_content": selected_content,
     }, indent=2)
 

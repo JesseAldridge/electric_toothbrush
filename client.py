@@ -73,20 +73,7 @@ def main_loop():
     post_json = json.dumps({'query': query_string, 'selected_index': selected_index})
     headers = {'content-type': 'application/json'}
     url = 'http://127.0.0.1:{}/search'.format(config.PORT)
-    for _ in range(2):
-      try:
-        resp = requests.post(url, data=post_json, headers=headers)
-      except requests.exceptions.ConnectionError:
-        server_path = os.path.join(os.path.dirname(__file__), 'etoothbrush_server')
-        print('failed to connect, launching server:', server_path, '...')
-        subprocess.Popen(['nohup', server_path],
-                         stdout=open(os.path.join(config.DIR_PATH_META, 'etoothbrush.out'), 'a'),
-                         stderr=open(os.path.join(config.DIR_PATH_META, 'etoothbrush.err'), 'a'),
-                         preexec_fn=os.setpgrp
-                         )
-        time.sleep(3)
-      else:
-        break
+    resp = requests.post(url, data=post_json, headers=headers)
 
     print('\nquery: [{}]\n'.format(query_string))
 
