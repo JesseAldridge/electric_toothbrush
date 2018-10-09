@@ -31,7 +31,8 @@ class Searcher:
   def score(self, query_string, match):
     doc_score = 0
     for term, term_score in match.term_to_score.items():
-      doc_score += term_score / self.term_to_doc_count[term]  # weight rare words more heavily
+      if term in self.term_to_doc_count:
+        doc_score += term_score / self.term_to_doc_count[term]  # weight rare words more heavily
     return doc_score
 
     # if query_string in match.basename:
