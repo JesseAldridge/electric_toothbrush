@@ -257,7 +257,7 @@ func main() {
 			if note_name == "" {
 				note_name = search_payload.Query
 			}
-			open_note(note_name, search_result.SelectedContent, dir_path_meta, app)
+			open_note(note_name, search_result.SelectedContent, dir_path, app)
 		} else if k == tcell.KeyCtrlD {
 			app.Stop()
 		} else if k == tcell.KeyCtrlK {

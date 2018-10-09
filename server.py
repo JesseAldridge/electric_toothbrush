@@ -36,14 +36,13 @@ def main():
 
       def on_any_event(self, event):
         if event.event_type == 'moved' or event.event_type == 'deleted':
-          old_basename = path_to_basename(event.src_path)
-          del basename_to_content[old_basename]
+          searcher.delete_path(event.src_path)
 
         if event.event_type == 'moved':
-          load_path(event.dest_path)
+          searcher.load_path(event.dest_path)
 
         if event.event_type == 'created' or event.event_type == 'modified':
-          load_path(event.src_path)
+          searcer.load_path(event.src_path)
 
     event_handler = MyHandler()
     observer = observers.Observer()

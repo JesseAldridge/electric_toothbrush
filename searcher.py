@@ -7,20 +7,24 @@ class Match:
 
 class Searcher:
   def __init__(self, dir_path):
-    def path_to_basename(path):
-      return os.path.splitext(os.path.basename(path))[0]
-
-    def load_path(path):
-      basename = path_to_basename(path)
-      with open(path) as f:
-        self.basename_to_content[basename] = f.read()
-
     print('loading files...')
     self.basename_to_content = {}
     glob_path = os.path.join(dir_path, '*.txt')
     for path in glob.glob(glob_path):
       load_path(path)
     print('loaded {} files'.format(len(self.basename_to_content)))
+
+  def path_to_basename(self, path):
+    return os.path.splitext(os.path.basename(path))[0]
+
+  def delete_path(self, path):
+    old_basename = self.path_to_basename(path)
+    del self.basename_to_content[old_basename]
+
+  def load_path(path):
+    basename = self.path_to_basename(path)
+    with open(path) as f:
+      self.basename_to_content[basename] = f.read()
 
   def score(self, query_string, match):
     doc_score = 0
