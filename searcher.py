@@ -12,7 +12,7 @@ class Searcher:
     self.basename_to_content_lower = {}
     glob_path = os.path.join(dir_path, '*.txt')
     for path in glob.glob(glob_path):
-      load_path(path)
+      self.load_path(path)
     print('loaded {} files'.format(len(self.basename_to_content)))
 
   def path_to_basename(self, path):
@@ -22,7 +22,7 @@ class Searcher:
     old_basename = self.path_to_basename(path)
     del self.basename_to_content[old_basename]
 
-  def load_path(path):
+  def load_path(self, path):
     basename = self.path_to_basename(path)
     with open(path) as f:
       self.basename_to_content[basename] = f.read()

@@ -13,7 +13,7 @@ def main():
   PORT = 38906
 
   dir_path = os.path.expanduser(DIR_PATH_NOTES)
-  search_obj = searcher.Searcher(dir_path)
+  search_inst = searcher.Searcher(dir_path)
 
   app = flask.Flask(__name__)
   port = int(sys.argv[1]) if len(sys.argv) == 2 else PORT
@@ -27,7 +27,7 @@ def main():
     if selected_index is not None:
       selected_index = int(selected_index)
     print('searching for:', query_string)
-    result_dict = search_obj.search(query_string, selected_index)
+    result_dict = search_inst.search(query_string, selected_index)
     return json.dumps(result_dict, indent=2)
 
   def monitor_filesystem():
@@ -36,13 +36,13 @@ def main():
 
       def on_any_event(self, event):
         if event.event_type == 'moved' or event.event_type == 'deleted':
-          searcher.delete_path(event.src_path)
+          search_inst.delete_path(event.src_path)
 
         if event.event_type == 'moved':
-          searcher.load_path(event.dest_path)
+          search_inst.load_path(event.dest_path)
 
         if event.event_type == 'created' or event.event_type == 'modified':
-          searcer.load_path(event.src_path)
+          search_inst.load_path(event.src_path)
 
     event_handler = MyHandler()
     observer = observers.Observer()
