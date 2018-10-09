@@ -137,13 +137,15 @@ func search_for(search_payload *SearchPayload, search_result *SearchResult, post
 	if !name_match && search_payload.Query != "" {
 		search_result.MatchedNames = append(
 			search_result.MatchedNames,
-			search_payload.Query+" [[Create New Note]]",
+			search_payload.Query+" [Create New Note]",
 		)
 	}
 
 	if search_payload.SelectedIndex >= len(search_result.MatchedNames) {
 		search_payload.SelectedIndex = 0
 	}
+
+	log.Println("search_payload.SelectedIndex:", search_payload.SelectedIndex)
 
 	if len(search_result.MatchedNames) == 0 {
 		search_result.SelectedName = ""
@@ -253,6 +255,8 @@ func main() {
 			if search_payload.Query == ":q" {
 				app.Stop()
 			}
+			log.Println("searching:", search_payload)
+
 			note_name := search_result.SelectedName
 			if note_name == "" {
 				note_name = search_payload.Query

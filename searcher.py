@@ -21,6 +21,7 @@ class Searcher:
   def delete_path(self, path):
     old_basename = self.path_to_basename(path)
     del self.basename_to_content[old_basename]
+    del self.basename_to_content_lower[old_basename]
 
   def load_path(self, path):
     basename = self.path_to_basename(path)
@@ -81,7 +82,7 @@ class Searcher:
 
     selected_content = None
     if selected_index is not None and matches and selected_index < len(matches):
-      selected_content = self.basename_to_content[matches[selected_index].basename]
+      selected_content = self.basename_to_content.get(matches[selected_index].basename)
 
     matched_basenames = [match.basename for match in matches]
 
