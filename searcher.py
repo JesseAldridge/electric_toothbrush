@@ -9,6 +9,7 @@ class Searcher:
   def __init__(self, dir_path):
     print('loading files...')
     self.basename_to_content = {}
+    self.basename_to_content_lower = {}
     glob_path = os.path.join(dir_path, '*.txt')
     for path in glob.glob(glob_path):
       load_path(path)
@@ -25,6 +26,7 @@ class Searcher:
     basename = self.path_to_basename(path)
     with open(path) as f:
       self.basename_to_content[basename] = f.read()
+    self.basename_to_content_lower[basename] = self.basename_to_content[basename].lower()
 
   def score(self, query_string, match):
     doc_score = 0
@@ -43,9 +45,9 @@ class Searcher:
 
     matches = []
     self.term_to_doc_count = {}
-    for basename, content in self.basename_to_content.items():
-      remaining_basename = basename.lower()
-      remaining_content = content_lower = content.lower()
+    for basename, content_lower in self.basename_to_content_lower.items():
+      remaining_basename = basename
+      remaining_content = content_lower
 
       match = Match(basename)
       for term in terms:
