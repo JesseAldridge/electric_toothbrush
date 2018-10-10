@@ -33,7 +33,8 @@ class Searcher:
     doc_score = 0
     for term, term_score in match.term_to_score.items():
       if term in self.term_to_doc_count:
-        doc_score += term_score / self.term_to_doc_count[term]  # weight rare words more heavily
+        # weight rare words more heavily
+        doc_score += term_score / self.term_to_doc_count[term]
     return doc_score
 
     # if query_string in match.basename:
@@ -43,7 +44,7 @@ class Searcher:
     # return len([1 for token in tokens if token in match.basename])
 
   def search(self, query_string, selected_index):
-    terms = set(query_string.lower().split())
+    terms = query_string.lower().split()
 
     matches = []
     self.term_to_doc_count = {}
@@ -59,17 +60,21 @@ class Searcher:
         if term in basename or term in content_lower:
           self.term_to_doc_count[term] += 1
 
-          if term in basename: # matches in the title are more important
+          # matches in the title are more important
+          if term in basename:
             term_score += 10
           else:
             term_score += 1
-          if term in remaining_basename or term in remaining_content: # order bonus
+
+          # token order bonus
+          if term in remaining_basename:
             term_score += 1
-            if term in remaining_basename:
-              remaining_basename = remaining_basename.split(term, 1)[1]
-            else:
-              remaining_content = remaining_content.split(term, 1)[1]
+            remaining_basename = remaining_basename.split(term, 1)[1]
+          if term in remaining_content:
+            term_score += 1
+            remaining_content = remaining_content.split(term, 1)[1]
           match.term_to_score[term] = term_score
+
       if match.term_to_score:
         matches.append(match)
 
@@ -104,8 +109,9 @@ if __name__ == '__main__':
     ('bar foo', ['bar foo baz', 'foo bar baz', 'estimates (estimation)']),
     # matches against content
     ('zzz', ['something else']),
-    ('is string python')
+    ('x', ['x']),
   ]:
+    print('---query---:', query)
     results = searcher.search(query, 0)
     print('results:', results)
     assert results['matched_basenames'] == expected_basenames
