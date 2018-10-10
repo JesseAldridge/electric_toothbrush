@@ -30,6 +30,9 @@ class Searcher:
     self.basename_to_content_lower[basename] = self.basename_to_content[basename].lower()
 
   def score(self, query_string, match):
+    if query_string == match.basename:
+      return 100
+
     doc_score = 0
     for term, term_score in match.term_to_score.items():
       if term in self.term_to_doc_count:
@@ -109,7 +112,8 @@ if __name__ == '__main__':
     ('bar foo', ['bar foo baz', 'foo bar baz', 'estimates (estimation)']),
     # matches against content
     ('zzz', ['something else']),
-    ('x', ['x']),
+    # exact matches are more important
+    ('x', ['x', 'x y z']),
   ]:
     print('---query---:', query)
     results = searcher.search(query, 0)

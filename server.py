@@ -28,6 +28,7 @@ def main():
       selected_index = int(selected_index)
     print('searching for:', query_string)
     result_dict = search_inst.search(query_string, selected_index)
+    print('results:', result_dict)
     return json.dumps(result_dict, indent=2)
 
   def monitor_filesystem():
