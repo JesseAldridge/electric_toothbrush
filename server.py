@@ -13,6 +13,9 @@ def main():
   PORT = 38906
 
   dir_path = os.path.expanduser(DIR_PATH_NOTES)
+  if not os.path.exists(dir_path):
+    os.makedirs(dir_path)
+
   search_inst = searcher.Searcher(dir_path)
 
   app = flask.Flask(__name__)

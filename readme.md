@@ -14,7 +14,9 @@ pip install -r requirements.txt
 ```
 
 Set `dir_path` in client.go and `DIR_PATH_NOTES` in server.py to the directory that you will use to
-store your notes. By default it's ~/Dropbox/tbrush_notes
+store your notes.
+
+By default it's "~/Dropbox/tbrush_notes"
 
 Usage
 ---
