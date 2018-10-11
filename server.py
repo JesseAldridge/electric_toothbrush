@@ -14,6 +14,7 @@ def main():
 
   dir_path = os.path.expanduser(DIR_PATH_NOTES)
   if not os.path.exists(dir_path):
+    print("created directory:", dir_path)
     os.makedirs(dir_path)
 
   search_inst = searcher.Searcher(dir_path)
