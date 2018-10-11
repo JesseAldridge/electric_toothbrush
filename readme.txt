@@ -5,33 +5,29 @@ Something like this:
 ```
 git clone git@github.com:JesseAldridge/electric_toothbrush.git
 cd electric_toothbrush
+# build the project
+go build client.go
+# move the client onto your path
+mv client /usr/local/bin/t
+# install the server requirements
 pip install -r requirements.txt
-# symlink the client
-ln -s /Users/jesse_aldridge/Dropbox/electric_toothbrush/client.py /usr/local/bin/t
-# symlink the server
-ln -s /Users/jesse_aldridge/Dropbox/electric_toothbrush/server.py /usr/local/bin/etoothbrush_server
 ```
 
-Set DIR_PATH_NOTES in config.py to the directory that you will use to store your notes.
+Set `dir_path` in client.go and `DIR_PATH_NOTES` in server.py to the directory that you will use to
+store your notes. By default it's ~/Dropbox/tbrush_notes
 
 Usage
 ---
 
-Run the server:
-`python serve.py`
+Run the server (I like to just leave it running in a minimized terminal window.)
+`python3 server.py`
 
 In another terminal, run the client:
 `t`
 
 Just start typing to search your notes.
 Press the up/down arrows to select a note.
-Hit return to either open the matching file or create a new file if there are no matches.
-
-ctrl+n will also create a new note from the current query
-
-Note: If you don't launch the server in a separate terminal, the client will launch for you.
-If this happens and you want to kill the server, do `ps aux | head -n1; ps aux | grep etoothbrush`
-then: `kill <pid>`
+Press return to open the selected note or create a new note.
 
 License
 ---
