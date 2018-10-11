@@ -5,7 +5,7 @@ Something like this:
 ```
 git clone git@github.com:JesseAldridge/electric_toothbrush.git
 cd electric_toothbrush
-# build the project
+# build the client
 go build client.go
 # move the client onto your path
 mv client /usr/local/bin/t
