@@ -15,7 +15,6 @@ import (
 	"time"
 
 	"github.com/anmitsu/go-shlex"
-	"github.com/atotto/clipboard"
 	"github.com/gdamore/tcell"
 	"github.com/rivo/tview"
 )
@@ -34,18 +33,17 @@ func open_note(
 	dir_path string,
 	app *tview.Application,
 ) {
-	temp_file_path := filepath.Join(dir_path, note_name) + ".txt"
-	ioutil.WriteFile(temp_file_path, []byte(selected_content), 0644)
+	file_path := filepath.Join(dir_path, note_name) + ".txt"
 
 	editor := os.Getenv("EDITOR")
 	if editor == "" {
-		err := run([]string{"open", temp_file_path})
+		err := run([]string{"open", file_path})
 		if err != nil {
-			run([]string{"open", "-e", temp_file_path})
+			run([]string{"open", "-e", file_path})
 		}
 	} else {
 		cmd_tokens, _ := shlex.Split(editor, true)
-		cmd_tokens = append(cmd_tokens, temp_file_path)
+		cmd_tokens = append(cmd_tokens, file_path)
 		app.Suspend(func() { run(cmd_tokens) })
 	}
 }
@@ -267,8 +265,6 @@ func main() {
 		} else if k == tcell.KeyCtrlK {
 			post("delete", map[string](string){"note_name": search_result.SelectedName}, nil)
 			search()
-		} else if k == tcell.KeyCtrlX {
-			clipboard.WriteAll(search_result.SelectedContent)
 		}
 
 		ui.Table.Select(search_payload.SelectedIndex, 0)

@@ -24,10 +24,12 @@ class Searcher:
     del self.basename_to_content_lower[old_basename]
 
   def load_path(self, path):
+    print("loading path:", path)
     basename = self.path_to_basename(path)
     with open(path) as f:
       self.basename_to_content[basename] = f.read()
     self.basename_to_content_lower[basename] = self.basename_to_content[basename].lower()
+    print('new content:', self.basename_to_content[basename])
 
   def score(self, query_string, match):
     if query_string == match.basename:
@@ -94,12 +96,15 @@ class Searcher:
 
     matched_basenames = [match.basename for match in matches]
 
-    return {
+    return_dict = {
       "matched_basenames": matched_basenames,
       "scores": scores,
       "is_more": is_more,
       "selected_content": selected_content,
     }
+
+    print("returning:", return_dict)
+    return return_dict
 
 if __name__ == '__main__':
   searcher = Searcher('test_notes')
