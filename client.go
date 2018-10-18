@@ -34,6 +34,8 @@ func open_note(
 	app *tview.Application,
 ) {
 	file_path := filepath.Join(dir_path, note_name) + ".txt"
+	f, _ := os.OpenFile(file_path, os.O_CREATE, 0666) // create file if it doesn't exist
+	f.Close()
 
 	editor := os.Getenv("EDITOR")
 	if editor == "" {
