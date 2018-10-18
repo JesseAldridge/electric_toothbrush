@@ -96,7 +96,7 @@ func adjust_selected_index(
 		selected_index = len(search_result.MatchedNames)
 	}
 	if selected_index < 0 {
-		selected_index = 0
+		selected_index = len(search_result.MatchedNames) - 1
 	}
 	search_payload.SelectedIndex = selected_index
 }
