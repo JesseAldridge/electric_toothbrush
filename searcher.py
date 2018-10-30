@@ -60,10 +60,9 @@ class Searcher:
       match = Match(basename)
       for term in terms:
         term_score = 0
-        self.term_to_doc_count.setdefault(term, 0)
 
         if term in basename or term in content_lower:
-          self.term_to_doc_count[term] += 1
+          self.term_to_doc_count[term] = self.term_to_doc_count.get(term, 0) + 1
 
           # matches in the title are more important
           if term in basename:
