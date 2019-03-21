@@ -47,6 +47,7 @@ def main():
           search_inst.load_path(event.dest_path)
 
         if event.event_type == 'created' or event.event_type == 'modified':
+          print('created:', event.src_path)
           search_inst.load_path(event.src_path)
 
     event_handler = MyHandler()
