@@ -17,6 +17,7 @@ import (
 	"github.com/anmitsu/go-shlex"
 	"github.com/gdamore/tcell"
 	"github.com/rivo/tview"
+	"github.com/atotto/clipboard"
 )
 
 func run(cmd_tokens []string) error {
@@ -244,6 +245,7 @@ func main() {
 
 	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		k := event.Key()
+
 		if k == tcell.KeyDown || k == tcell.KeyUp {
 			amount := 1
 			if k == tcell.KeyUp {
@@ -267,6 +269,13 @@ func main() {
 		} else if k == tcell.KeyCtrlK {
 			post("delete", map[string](string){"note_name": search_result.SelectedName}, nil)
 			search()
+		} else if k == tcell.KeyCtrlV {
+			text, err := clipboard.ReadAll()
+			if err != nil {
+				panic(err)
+			}
+
+			on_change(text)
 		}
 
 		ui.Table.Select(search_payload.SelectedIndex, 0)
