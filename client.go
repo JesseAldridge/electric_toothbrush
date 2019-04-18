@@ -38,6 +38,10 @@ func open_note(
 	f, _ := os.OpenFile(file_path, os.O_CREATE, 0666) // create file if it doesn't exist
 	f.Close()
 
+	if err := clipboard.WriteAll(string(note_name)); err != nil {
+		panic(err)
+	}
+
 	editor := os.Getenv("EDITOR")
 	if editor == "" {
 		err := run([]string{"open", file_path})
