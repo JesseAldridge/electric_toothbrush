@@ -11,7 +11,9 @@ class Searcher:
     self.basename_to_content = {}
     self.basename_to_content_lower = {}
     glob_path = os.path.join(dir_path, '*.txt')
-    for path in glob.glob(glob_path):
+    paths = glob.glob(glob_path)
+    for i, path in enumerate(paths):
+      print("loading path {}/{}: {}".format(i + 1, len(paths) + 1, path))
       self.load_path(path)
     print('loaded {} files'.format(len(self.basename_to_content)))
 
@@ -24,7 +26,6 @@ class Searcher:
     del self.basename_to_content_lower[old_basename]
 
   def load_path(self, path):
-    print("loading path:", path)
     basename = self.path_to_basename(path)
     with open(path) as f:
       self.basename_to_content[basename] = f.read()
