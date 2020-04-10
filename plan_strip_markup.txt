@@ -1,0 +1,19 @@
+Electric Toothbrush now supports .drawio files. Everything now happens via .drawio files instead of .txt files. This means you can now structure data in a much richer way.
+
+1. What do you mean by "structure data in a much richer way"?
+
+Ideas are connected to other ideas. That's just how the human mind works. A knowledge management system should reflect this essential structure.
+
+2. Can you show me an example of what we had before vs what we have now?
+
+Before you had a text file. Now you have that same text file except it's in a .drawio diagram. Which means you can add other nodes and stuff... essentially annotate and elaborate on your knowledge.
+
+3. But why do I want to annotate? The whole point was to just have a single piece of information, no?
+
+Uh, yeah I guess that's right. I don't really want to add more information to a note.
+
+I guess what I really want is better search on my existing diagrams.
+
+4. What's wrong with the existing search?
+
+

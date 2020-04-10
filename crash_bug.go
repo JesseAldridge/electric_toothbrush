@@ -11,14 +11,12 @@ import (
 	"os/exec"
 	"os/user"
 	"path/filepath"
-	"strings"
 	"time"
 
-	"github.com/anmitsu/go-shlex"
 	"github.com/gdamore/tcell"
 	"github.com/rivo/tview"
-	"github.com/atotto/clipboard"
 )
+
 
 func run(cmd_tokens []string) error {
 	log.Println("running:", cmd_tokens)
@@ -29,27 +27,11 @@ func run(cmd_tokens []string) error {
 }
 
 func open_note(
-	note_path string,
-	selected_content string,
+	note_name string,
 	dir_path string,
-	app *tview.Application,
 ) {
-	file_path := filepath.Join(dir_path, note_path)
-
-// <mxfile host="Electron" modified="2020-04-10T09:29:25.541Z" agent="5.0 (Macintosh; Intel Mac OS X 10_14_5) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/12.9.9 Chrome/80.0.3987.163 Electron/8.2.1 Safari/537.36" etag="5VXUOnNYjKgLG4t90Rqj" version="12.9.9" type="device">
-//   <diagram id="MmwPf0iDSc0UJbkOYZ7m" name="Page-1">
-//     <mxGraphModel dx="1067" dy="746" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
-//       <root>
-//         <mxCell id="0" />
-//         <mxCell id="1" parent="0" />
-//       </root>
-//     </mxGraphModel>
-//   </diagram>
-// </mxfile>
-
-
-	// create file if it doesn't exist
-	f, _ := os.OpenFile(file_path, os.O_CREATE, 0666)
+	file_path := filepath.Join(dir_path, note_name) + ".txt"
+	f, _ := os.OpenFile(file_path, os.O_CREATE, 0666) // create file if it doesn't exist
 	f.Close()
 
 	editor := os.Getenv("EDITOR")
@@ -58,10 +40,6 @@ func open_note(
 		if err != nil {
 			run([]string{"open", "-e", file_path})
 		}
-	} else {
-		cmd_tokens, _ := shlex.Split(editor, true)
-		cmd_tokens = append(cmd_tokens, file_path)
-		app.Suspend(func() { run(cmd_tokens) })
 	}
 }
 
@@ -94,26 +72,6 @@ func post_to(
 			log.Fatalln(err)
 		}
 	}
-}
-
-func adjust_selected_index(
-	amount int,
-	search_payload *SearchPayload,
-	search_result *SearchResult,
-) {
-	if len(search_result.MatchedNames) == 0 {
-		return
-	}
-
-	selected_index := search_payload.SelectedIndex
-	selected_index += amount
-	if selected_index > len(search_result.MatchedNames) {
-		selected_index = len(search_result.MatchedNames)
-	}
-	if selected_index < 0 {
-		selected_index = len(search_result.MatchedNames) - 1
-	}
-	search_payload.SelectedIndex = selected_index
 }
 
 type SearchPayload struct {
@@ -235,13 +193,8 @@ func main() {
 			}
 		}()
 
-		if strings.HasPrefix(search_payload.Query, ":") {
-			search_result.MatchedNames = []string{}
-			search_result.SelectedContent = ""
-			search_result.SelectedName = ""
-		} else {
-			search_for(&search_payload, &search_result, post, ui)
-		}
+		search_for(&search_payload, &search_result, post, ui)
+
 		app.Draw()
 	}
 
@@ -252,51 +205,23 @@ func main() {
 	input_field := tview.NewInputField().SetFieldWidth(100).SetChangedFunc(on_change)
 
 	layout := tview.NewFlex().
-		SetDirection(tview.FlexRow).
-		AddItem(input_field, 1, 1, true).
-		AddItem(ui.Table, 0, 1, false).
-		AddItem(ui.TextView, 0, 1, false)
+			SetDirection(tview.FlexRow).
+			AddItem(input_field, 1, 1, true).
+			AddItem(ui.Table, 0, 1, false).
+			AddItem(ui.TextView, 0, 1, false)
+
 
 	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		k := event.Key()
 
-		if k == tcell.KeyDown || k == tcell.KeyUp {
-			amount := 1
-			if k == tcell.KeyUp {
-				amount = -1
-			}
-			adjust_selected_index(amount, &search_payload, &search_result)
-			go search()
-		} else if k == tcell.KeyEnter {
-			if search_payload.Query == ":q" {
-				app.Stop()
-			}
-			log.Println("searching:", search_payload)
-
-			note_name := search_result.SelectedName
-			if note_name == "" {
-				note_name = search_payload.Query
-			}
-			open_note(note_name, search_result.SelectedContent, dir_path, app)
-		} else if k == tcell.KeyCtrlD {
-			app.Stop()
-		} else if k == tcell.KeyCtrlK {
-			post("delete", map[string](string){"note_name": search_result.SelectedName}, nil)
-			search()
-		} else if k == tcell.KeyCtrlV {
-			text, err := clipboard.ReadAll()
-			if err != nil {
-				panic(err)
-			}
-
-			on_change(text)
+		if k == tcell.KeyEnter {
+			open_note(
+				"matrix flood_row_col",
+				"/Users/jessealdridge/Dropbox/tbrush_notes",
+			)
 		}
-
-		ui.Table.Select(search_payload.SelectedIndex, 0)
-
 		return event
 	})
-
 	if err := app.SetRoot(layout, true).Run(); err != nil {
 		panic(err)
 	}

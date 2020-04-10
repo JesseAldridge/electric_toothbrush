@@ -1,5 +1,7 @@
 import os, glob
 
+from lxml import etree
+
 class Match:
   def __init__(self, basename):
     self.term_to_score = {}
@@ -12,6 +14,8 @@ class Searcher:
     self.basename_to_content_lower = {}
     glob_path = os.path.join(dir_path, '*.txt')
     paths = glob.glob(glob_path)
+    glob_path = os.path.join(dir_path, '*.drawio')
+    paths += glob.glob(glob_path)
     for i, path in enumerate(paths):
       print("loading path {}/{}: {}".format(i + 1, len(paths) + 1, path))
       self.load_path(path)
@@ -28,7 +32,22 @@ class Searcher:
   def load_path(self, path):
     basename = self.path_to_basename(path)
     with open(path) as f:
-      self.basename_to_content[basename] = f.read()
+      text = f.read()
+    if path.rsplit('.', 1)[-1] == 'drawio':
+      tree = etree.XML(text)
+
+      lines = []
+      def recurse_xml(root):
+        value_str = root.attrib.get('value')
+        if value_str:
+          lines.append(value_str)
+        for child in root:
+          recurse_xml(child)
+
+      recurse_xml(tree)
+      text = '\n'.join(lines)
+
+    self.basename_to_content[basename] = text
     self.basename_to_content_lower[basename] = self.basename_to_content[basename].lower()
     print('new content:', self.basename_to_content[basename])
 
