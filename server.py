@@ -9,7 +9,7 @@ from flask import request
 import searcher
 
 def main():
-  DIR_PATH_NOTES = os.path.expanduser("~/Dropbox/tbrush_notes")
+  DIR_PATH_NOTES = os.path.expanduser("~/Dropbox/tbrush_diagrams")
   PORT = 38906
 
   dir_path = os.path.expanduser(DIR_PATH_NOTES)

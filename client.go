@@ -14,7 +14,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/anmitsu/go-shlex"
 	"github.com/gdamore/tcell"
 	"github.com/rivo/tview"
 	"github.com/atotto/clipboard"
@@ -29,40 +28,37 @@ func run(cmd_tokens []string) error {
 }
 
 func open_note(
-	note_path string,
+	note_name string,
 	selected_content string,
 	dir_path string,
 	app *tview.Application,
 ) {
-	file_path := filepath.Join(dir_path, note_path)
+	file_path := filepath.Join(dir_path, note_name) + ".drawio"
 
-// <mxfile host="Electron" modified="2020-04-10T09:29:25.541Z" agent="5.0 (Macintosh; Intel Mac OS X 10_14_5) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/12.9.9 Chrome/80.0.3987.163 Electron/8.2.1 Safari/537.36" etag="5VXUOnNYjKgLG4t90Rqj" version="12.9.9" type="device">
-//   <diagram id="MmwPf0iDSc0UJbkOYZ7m" name="Page-1">
-//     <mxGraphModel dx="1067" dy="746" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
-//       <root>
-//         <mxCell id="0" />
-//         <mxCell id="1" parent="0" />
-//       </root>
-//     </mxGraphModel>
-//   </diagram>
-// </mxfile>
-
+	blank_drawio_xml := []byte(`<mxfile host="Electron" modified="2020-04-10T09:29:25.541Z" agent="5.0 (Macintosh; Intel Mac OS X 10_14_5) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/12.9.9 Chrome/80.0.3987.163 Electron/8.2.1 Safari/537.36" etag="5VXUOnNYjKgLG4t90Rqj" version="12.9.9" type="device">
+  <diagram id="MmwPf0iDSc0UJbkOYZ7m" name="Page-1">
+    <mxGraphModel dx="1067" dy="746" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>`)
 
 	// create file if it doesn't exist
-	f, _ := os.OpenFile(file_path, os.O_CREATE, 0666)
-	f.Close()
-
-	editor := os.Getenv("EDITOR")
-	if editor == "" {
-		err := run([]string{"open", file_path})
-		if err != nil {
-			run([]string{"open", "-e", file_path})
-		}
-	} else {
-		cmd_tokens, _ := shlex.Split(editor, true)
-		cmd_tokens = append(cmd_tokens, file_path)
-		app.Suspend(func() { run(cmd_tokens) })
+	_, err := os.Stat(file_path)
+	if os.IsNotExist(err) {
+	  err := ioutil.WriteFile(file_path, blank_drawio_xml, 0644)
+	  if err != nil {
+	    panic(err)
+	  }
 	}
+
+	err = run([]string{"open", file_path})
+  if err != nil {
+    panic(err)
+  }
 }
 
 type post_type func(string, interface{}, interface{})
@@ -188,7 +184,7 @@ func main() {
 	port := 38906
 
 	usr, _ := user.Current()
-	dir_path := filepath.Join(usr.HomeDir, "Dropbox", "tbrush_notes")
+	dir_path := filepath.Join(usr.HomeDir, "Dropbox", "tbrush_diagrams")
 	_, err := os.Stat(dir_path)
 	if os.IsNotExist(err) {
 		os.MkdirAll(dir_path, os.ModePerm)

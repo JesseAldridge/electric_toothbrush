@@ -1,6 +1,6 @@
-import os, glob
+import os, glob, unicodedata
 
-from lxml import etree
+import xml.etree.ElementTree as ET
 
 class Match:
   def __init__(self, basename):
@@ -33,8 +33,9 @@ class Searcher:
     basename = self.path_to_basename(path)
     with open(path) as f:
       text = f.read()
+
     if path.rsplit('.', 1)[-1] == 'drawio':
-      tree = etree.XML(text)
+      tree = ET.fromstring(text)
 
       lines = []
       def recurse_xml(root):
