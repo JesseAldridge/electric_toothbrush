@@ -1,0 +1,87 @@
+Electric toothbrush now supports draw.io files. Instead of working with text files I'm going to be working with diagrams going forward.
+
+1. Why diagrams?
+
+Graphs are a better way to represent knowledge. You can refer to other ideas.
+
+2. Can't words do that?
+
+Yes they can, but you can't see the connections.
+
+3. So graphs are better because you can see how ideas are connected?
+
+Yeah
+
+4. Why is it important to see how ideas are connected?
+
+Because that allows you build a structure.
+
+5. Ok, and structures are better for reasoning?
+
+Yeah probably.
+
+6. Ok, will their be UI difficulties? Sublime Text is a pretty smooth experience.
+
+Create new note -> launch drawio -> double click -> start typing -> format text
+yeah that might suck a bit, probably won't be too bad
+I think the positives outweigh the negatives.
+
+7. So you will still be searching the filename and content as before?
+
+Yes
+
+8. Will you port all of the old notes to drawio?
+
+Yeah probably. Might retain backward compatibility.
+
+9. Switching to diagrams might be easier?
+
+Yeah, I should probably do that. Then I don't need match objects.
+
+10. Ok, so what all needs to be done?
+
+1/ When I open a new note, Drawio should launch rather than Sublime Text
+2/ Same with creating new notes
+3/ Maybe I should port the old text files to drawio diagrams
+
+I think that's it.
+
+11. Ok, how long will that take?
+
+Probably the rest of today
+
+12. Do you think there's a product here?
+
+Maybe. I'm mostly building this for myself right now.
+
+13. Are you going to make a replacement for Drawio?
+
+Not right now. Maybe later. If this works really well.
+
+14. Are you going to get rid of your old diagrams?
+
+I'll probably incorporate them into the notes directory.
+
+15. No more directory hierarchies then?
+
+Nah, seems like filename tags work better.
+
+16. Are you ditching multi tab diagrams?
+
+Probably. We'll see.
+
+17. In the electric toothbrush preview... what do you see?
+
+You will see the text content of the diagram. No graph will be rendered.
+
+18. Does electric toothbrush currently do tfidf?
+
+I don't think so. I might add that. Actually maybe it does. It could I think.
+
+19. Why do you think this idea is so important?
+
+Manipulating information is the essense of my job. Anything that can help me do that better is great. This could potentially help me do that a lot better.
+
+20. Aren't you always going to be bottlenecked by your brain?
+
+Yeah, but having mental models accessible at my fingertips could be pretty huge.

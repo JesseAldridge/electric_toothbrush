@@ -280,9 +280,6 @@ func main() {
 			open_note(note_name, search_result.SelectedContent, dir_path, app)
 		} else if k == tcell.KeyCtrlD {
 			app.Stop()
-		} else if k == tcell.KeyCtrlK {
-			post("delete", map[string](string){"note_name": search_result.SelectedName}, nil)
-			search()
 		} else if k == tcell.KeyCtrlV {
 			text, err := clipboard.ReadAll()
 			if err != nil {
