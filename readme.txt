@@ -7,7 +7,6 @@ git clone git@github.com:JesseAldridge/electric_toothbrush.git
 cd electric_toothbrush
 
 # install dependencies
-go get github.com/anmitsu/go-shlex
 go get github.com/atotto/clipboard
 go get github.com/gdamore/tcell
 go get github.com/rivo/tview
@@ -25,7 +24,7 @@ pip3 install -r requirements.txt
 Set `dir_path` in client.go and `DIR_PATH_NOTES` in server.py to the directory that you will use to
 store your notes.
 
-By default it's "~/Dropbox/tbrush_notes"
+By default it's "~/Dropbox/tbrush_diagrams"
 
 Usage
 ---
