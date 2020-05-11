@@ -37,7 +37,7 @@ def main():
 
   def monitor_filesystem():
     class MyHandler(events.PatternMatchingEventHandler):
-      patterns = ["*.txt"]
+      patterns = ["*.drawio"]
 
       def on_any_event(self, event):
         if event.event_type == 'moved' or event.event_type == 'deleted':
