@@ -14,9 +14,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/atotto/clipboard"
 	"github.com/gdamore/tcell"
 	"github.com/rivo/tview"
-	"github.com/atotto/clipboard"
 )
 
 func run(cmd_tokens []string) error {
@@ -49,16 +49,16 @@ func open_note(
 	// create file if it doesn't exist
 	_, err := os.Stat(file_path)
 	if os.IsNotExist(err) {
-	  err := ioutil.WriteFile(file_path, blank_drawio_xml, 0644)
-	  if err != nil {
-	    panic(err)
-	  }
+		err := ioutil.WriteFile(file_path, blank_drawio_xml, 0644)
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	err = run([]string{"open", file_path})
-  if err != nil {
-    panic(err)
-  }
+	if err != nil {
+		panic(err)
+	}
 }
 
 type post_type func(string, interface{}, interface{})
@@ -246,6 +246,7 @@ func main() {
 		go search()
 	}
 	input_field := tview.NewInputField().SetFieldWidth(100).SetChangedFunc(on_change)
+	input_field.SetFieldBackgroundColor(tcell.ColorGreen)
 
 	layout := tview.NewFlex().
 		SetDirection(tview.FlexRow).

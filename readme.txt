@@ -15,7 +15,7 @@ go get github.com/rivo/tview
 go build client.go
 
 # move the client onto your path
-mv client /usr/local/bin/t
+mv client /usr/local/bin/td
 
 # install the server requirements
 pip3 install -r requirements.txt
